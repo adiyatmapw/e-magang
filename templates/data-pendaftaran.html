@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Pendaftaran - E-Magang</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+    <style>
+        body {
+            font-family: 'Figtree', sans-serif;
+            margin-bottom: 2rem;
+        }
+        thead th {
+            text-align: center;
+            vertical-align: middle;
+        }
+        #tabel-aktif thead th {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+        #tabel-selesai thead th {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+        .header-image {
+            background: url('{{ url_for('static', filename='images/header3.png') }}') center center / cover no-repeat;
+            background-size: 100%;
+            height: 200px;
+            max-width: 100%;
+            opacity: 0.8;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .status-tag {
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        .status-perlu-diseleksi { background-color: #fd7e14; }
+        .status-kel-berkas { background-color: #5154EB; }
+        .status-wawancara { background-color: #6f42c1; }
+        .status-diterima { background-color: #28a745; }
+        .status-ditolak { background-color: #dc3545; }
+        .status-berkas-sedang { background-color: #ffc107; color: black; }
+        .status-berkas-revisi { background-color: #ff3700; }
+        .status-berkas-sesuai { background-color: #28a745; }
+        .status-berkas-tidak-sesuai { background-color: #dc3545; }
+        .status-berkas-menunggu { background-color: #17a2b8; }
+        .status-berkas-revisi-selesai { background-color: #ff6a1a; }
+        .status-berkas-menentukan-tanggal { background-color: #4d2e87; }
+        .status-berkas-tanggal-sudah-ditentukan { background-color: #aa8ae7; color: black; }
+        .table thead th {
+            vertical-align: middle;
+            text-align: center;
+        }
+        .table tbody td {
+            vertical-align: middle;
+            text-align: center;
+        }
+        .copyright {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .filter-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        }
+
+        .filter-header .label {
+        font-family: 'Figtree', sans-serif;
+        font-weight: 600;
+        margin-bottom: 4px;
+        }
+
+    </style>
+</head>
+<body>
+    {% include 'navbar-admin.html' %}
+    {% include 'partials/flash_message.html' %}
+
+    <div class="container-fluid">
+        <div class="header-image"></div>
+    </div>
+
+    <div class="container">
+        <h4>Data Pendaftaran</h4>
+        <!-- Filter Section -->
+        <div class="card filter-card mb-4">
+            <div class="card-header bg-secondary text-white" data-bs-toggle="collapse" data-bs-target="#filterPanel" style="cursor: pointer;">
+            Filter Data <span class="float-end"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div id="filterPanel" class="collapse card-body bg-light">
+            <form id="filterForm" class="row g-3">
+                <div class="col-md-6 col-lg-3">
+                <label class="form-label">Nama</label>
+                <input type="text" class="form-control" name="nama">
+                </div>
+                <div class="col-md-6 col-lg-3">
+                <label class="form-label">Email</label>
+                <input type="text" class="form-control" name="email">
+                </div>
+                <div class="col-md-6 col-lg-3">
+                <label class="form-label">Asal Kampus</label>
+                <input type="text" class="form-control" name="kampus">
+                </div>
+                <div class="col-md-6 col-lg-3">
+                <label class="form-label">Status</label>
+                <select class="form-select" name="status">
+                    <option value="">Semua</option>
+                    <option value="Perlu Diseleksi">Perlu Diseleksi</option>
+                    <option value="Kel. Berkas">Kel. Berkas</option>
+                    <option value="Wawancara">Wawancara</option>
+                </select>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                <label class="form-label">Status Berkas</label>
+                <select class="form-select" name="status_berkas">
+                    <option value="">Semua</option>
+                    <option value="Sedang Diproses">Sedang Diproses</option>
+                    <option value="Revisi">Revisi</option>
+                    <option value="Sesuai">Sesuai</option>
+                    <option value="Menunggu Peserta">Menunggu Peserta</option>
+                    <option value="Revisi Selesai">Revisi Selesai</option>
+                    <option value="Revisi Selesai">Menentukan Tanggal</option>
+                    <option value="Revisi Selesai">Tanggal Sudah Ditentukan</option>
+                </select>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label class="form-label">Tanggal Aktivitas Terakhir</label>
+                <input type="date" class="form-control" name="last_activity">
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label class="form-label">Waktu Tunggu (hari)</label>
+                <input type="number" class="form-control" name="waktu_tunggu">
+            </div>
+                <div class="col-12">
+                <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </form>
+            </div>
+        </div>
+
+        <!-- Tabel Data Peserta Aktif -->
+        <h5>Data Peserta Aktif</h5>
+        <div class="d-flex justify-content-end mb-2">
+            <button class="btn btn-success" onclick="exportToExcel('tabel-aktif', 'DataPesertaAktif')">
+                <i class="bi bi-download me-1"></i> Export Excel Peserta Aktif
+            </button>
+        </div>
+          
+        
+        <table class="table table-bordered table-hover table-striped" id="tabel-aktif">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Asal Kampus/Sekolah</th>
+                    <th>Status</th>
+                    <th>Status Berkas</th>
+                    <th>Tanggal Aktivitas</th>
+                    <th>Waktu Tunggu</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data_aktif %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ row.nama }}</td>
+                    <td>{{ row.email }}</td>
+                    <td>{{ row.asal_kampus }}</td>
+                    <td>
+                        <span class="status-tag 
+                            {% if row.status_daftar == 'Perlu Diseleksi' %} status-perlu-diseleksi 
+                            {% elif row.status_daftar == 'Kel. Berkas' %} status-kel-berkas 
+                            {% elif row.status_daftar == 'Wawancara' %} status-wawancara 
+                            {% endif %}">
+                            {{ row.status_daftar }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-tag 
+                            {% if row.status_berkas == 'Sedang Diproses' %} status-berkas-sedang 
+                            {% elif row.status_berkas == 'Revisi' %} status-berkas-revisi 
+                            {% elif row.status_berkas == 'Sesuai' %} status-berkas-sesuai 
+                            {% elif row.status_berkas == 'Tidak Sesuai' %} status-berkas-tidak-sesuai
+                            {% elif row.status_berkas == 'Menunggu Peserta' %} status-berkas-menunggu
+                            {% elif row.status_berkas == 'Revisi Selesai' %} status-berkas-revisi-selesai
+                            {% elif row.status_berkas == 'Menentukan Tanggal' %} status-berkas-menentukan-tanggal
+                            {% elif row.status_berkas == 'Tanggal Sudah Ditentukan' %} status-berkas-tanggal-sudah-ditentukan    
+                            {% endif %}">
+                            {{ row.status_berkas }}
+                        </span>
+                    </td>
+                    <td>{{ row.last_activity.strftime('%d-%m-%Y %H:%M') if row.last_activity else '-' }}</td>
+                    <td>
+                        {{ row.waktu_tunggu }} hari
+                    </td>                      
+                    <td>
+                        {% if row.status_daftar == 'Perlu Diseleksi' %}
+                        <a href="/detaildatapeserta/{{ row.id }}" class="btn btn-warning btn-sm"><i class="bi bi-eye"></i></a>
+                        {% elif row.status_daftar == 'Kel. Berkas' and row.status_berkas in ['Sedang Diproses', 'Revisi', 'Revisi Selesai'] %}
+                        <a href="/detaildatapesertakelberkas/{{ row.id }}" class="btn btn-warning btn-sm"><i class="bi bi-eye"></i></a>
+                        {% else %}
+                        <a href="/detailpesertaprakerin/{{ row.id }}?from=pendaftaran" class="btn btn-warning btn-sm"><i class="bi bi-eye"></i></a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Tabel Data Peserta Diterima dan Ditolak -->
+        <h5 class="mt-5">Data Peserta Wawancara</h5>
+        <div class="d-flex justify-content-end mb-2">
+            <button class="btn btn-success" onclick="exportToExcel('tabel-selesai', 'DataPesertaWawancara')">
+                <i class="bi bi-download me-1"></i> Export Excel Peserta Wawancara
+            </button>
+        </div>
+          
+
+        <table class="table table-bordered table-hover table-striped" id="tabel-selesai">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Asal Kampus/Sekolah</th>
+                    <th>Status Berkas</th>
+                    <th>Tanggal Aktivitas</th>
+                    <th>Waktu Tunggu</th>
+                    <th>Action</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data_wawancara %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ row.nama }}</td>
+                    <td>{{ row.email }}</td>
+                    <td>{{ row.asal_kampus }}</td>
+                    <td>
+                        <span class="status-tag 
+                            {% if row.status_berkas == 'Menunggu Peserta' %} status-berkas-menunggu
+                            {% elif row.status_berkas == 'Menentukan Tanggal' %} status-berkas-menentukan-tanggal
+                            {% elif row.status_berkas == 'Tanggal Sudah Ditentukan' %} status-berkas-tanggal-sudah-ditentukan
+                            {% endif %}">
+                            {{ row.status_berkas }}
+                        </span>
+                    </td>
+                    <td>{{ row.last_activity.strftime('%d-%m-%Y %H:%M') if row.last_activity else '-' }}</td>
+                    <td>
+                        {{ row.waktu_tunggu }} hari
+                    </td>
+                    <td>
+                        <a href="/detailpesertaprakerin/{{ row.id }}?from=pendaftaran" class="btn btn-primary btn-sm">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                    </td>
+                      
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="copyright">
+        Copyright © 2025 e-Magang. All rights reserved.
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            const tableAktif = $('#tabel-aktif').DataTable({
+                paging: true,
+                searching: true,
+                lengthChange: true
+            });
+
+            $('#filterForm').on('submit', function (e) {
+                e.preventDefault();
+
+                const nama = $('input[name="nama"]').val();
+                const email = $('input[name="email"]').val();
+                const kampus = $('input[name="kampus"]').val();
+                const status = $('select[name="status"]').val();
+                const status_berkas = $('select[name="status_berkas"]').val();
+                const tanggal_aktivitas = $('input[name="last_activity"]').val();
+                const waktu_tunggu = parseInt($('input[name="waktu_tunggu"]').val());
+
+                tableAktif
+                    .column(1).search(nama)
+                    .column(2).search(email)
+                    .column(3).search(kampus)
+                    .column(4).search(status)
+                    .column(5).search(status_berkas)
+                    .draw();
+
+                // Filter manual kolom tanggal aktivitas dan waktu tunggu
+                tableAktif.rows().every(function () {
+                    const data = this.data();
+                    let show = true;
+
+                    // Tanggal Aktivitas filter
+                    if (tanggal_aktivitas) {
+                        const tanggalKolom = $(this.node()).find('td').eq(6).text().trim();
+                        if (tanggalKolom !== '-') {
+                            const tanggalRow = moment(tanggalKolom, 'DD-MM-YYYY HH:mm');
+                            const tanggalFilter = moment(tanggal_aktivitas);
+                            if (!tanggalRow.isSame(tanggalFilter, 'day')) {
+                                show = false;
+                            }
+                        } else {
+                            show = false;
+                        }
+                    }
+
+                    // Waktu Tunggu
+                    if (!isNaN(waktu_tunggu)) {
+                        const tunggu = $(this.node()).find('td').eq(7).text().replace(' hari',
+                            '').trim();
+                        if (parseInt(tunggu) < waktu_tunggu) {
+                            show = false;
+                        }
+                    }
+
+                    $(this.node()).toggle(show);
+                });
+            });
+        });
+    </script>
+    
+          <script>
+            $(document).ready(function () {
+              const table = $('#tabel-selesai').DataTable({
+                paging: true,
+                searching: true,
+                lengthChange: true
+              });
+          
+              $('#filterForm').on('submit', function (e) {
+                e.preventDefault();
+          
+                const nama = $('input[name="nama"]').val();
+                const email = $('input[name="email"]').val();
+                const kampus = $('input[name="kampus"]').val();
+                const status = $('select[name="status"]').val();
+                const status_berkas = $('select[name="status_berkas"]').val();
+          
+                // Terapkan filter ke kolom sesuai indeks
+                // Index kolom: 0=No, 1=Nama, 2=Email, 3=Kampus, 4=Status, 5=Status Berkas
+                table
+                  .column(1).search(nama)
+                  .column(2).search(email)
+                  .column(3).search(kampus)
+                  .column(4).search(status)
+                  .column(5).search(status_berkas)
+                  .draw();
+              });
+            });
+          </script>
+<script>
+    function exportToExcel(tableId, filename = '') {
+        const table = document.getElementById(tableId);
+        if (!table) {
+            alert('Tabel tidak ditemukan: ' + tableId);
+            return;
+        }
+
+        const clonedTable = table.cloneNode(true);
+
+        // Hapus kolom aksi jika ada
+        for (let row of clonedTable.rows) {
+            if (row.cells.length > 0) {
+                row.deleteCell(-1); // Hapus kolom terakhir (action)
+            }
+        }
+
+        const wb = XLSX.utils.table_to_book(clonedTable, {
+            sheet: "Sheet1"
+        });
+        XLSX.writeFile(wb, filename + ".xlsx");
+    }
+</script>
+  
+          
+      
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Akun - E-Magang</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Noto Sans', sans-serif;
+            overflow: auto;
+        }
+
+        .bg-image {
+            background: url('{{ url_for('static', filename='images/millingworking.png') }}') no-repeat center center
+            fixed;
+            background-size: cover;
+            height: 100%;
+            position: relative;
+        }
+
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2));
+        }
+
+        .register-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+            max-height: 90vh;     /* batas tinggi maksimal */
+            overflow-y: auto;     /* scroll jika terlalu tinggi */
+        }
+
+        .register-container:hover {
+            transform: translate(-50%, -50%) scale(1.02);
+        }
+
+        .register-header img {
+            width: 120px;
+            display: block;
+            margin: 0 auto 20px;
+        }
+
+        .form-control {
+            border-radius: 20px;
+        }
+
+        .btn-register {
+            width: 100%;
+            border-radius: 20px;
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-register:hover {
+            background-color: #0056b3;
+        }
+
+        .checkbox-text {
+            font-size: 14px;
+        }
+
+        .already-account {
+            text-align: center;
+            display: block;
+            margin-top: 10px;
+            color: #007bff;
+        }
+
+        .already-account:hover {
+            text-decoration: underline;
+        }
+
+        .copyright {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .input-group-text {
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-image">
+        <div class="bg-overlay"></div>
+        <div class="register-container">
+            <div class="register-header">
+                <img src="{{ url_for('static', filename='images/logosystem.png') }}" alt="Logo E-Magang">
+            </div>
+
+        <!-- Flash message -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-message">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+            <form action="/register" method="POST">
+                <div class="mb-3">
+                    <label for="fullname" class="form-label">Nama Lengkap (sesuai KTP)</label>
+                    <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Masukkan Nama Lengkap" required>
+                </div>
+                <div class="mb-3">
+                    <label for="nik" class="form-label">NIK</label>
+                    <input type="text" class="form-control" id="nik" name="nik" placeholder="Masukkan NIK (co: 320xxxxxxxx)"  required />
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Nomor Handphone</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Masukkan Nomor Handphone (co: 082xxxxxxxxx)" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan Email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Kata Sandi</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan kata sandi (Min: 8 karakter)" required minlength="8">
+                        <span class="input-group-text" id="togglePassword">
+                            <i class="bi bi-eye" id="passwordIcon"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Konfirmasi Kata Sandi</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Masukkan konfirmasi kata sandi" required>
+                        <span class="input-group-text" id="toggleConfirmPassword">
+                            <i class="bi bi-eye" id="confirmPasswordIcon"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="terms" required>
+                    <label class="form-check-label checkbox-text" for="terms">
+                        Dengan ini saya menyatakan bahwa seluruh data dan/atau informasi yang saya sampaikan adalah benar
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-register">Daftar</button>
+            </form>
+            <a href="/" class="already-account">Sudah mempunyai akun? Masuk Disini</a>
+        </div>
+    </div>
+    <div class="copyright">
+        Copyright © 2025 e-Magang. All rights reserved.
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle password visibility for password field
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            passwordIcon.className = type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+        });
+
+        // Toggle password visibility for confirm password field
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const confirmPasswordIcon = document.getElementById('confirmPasswordIcon');
+            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordInput.setAttribute('type', type);
+            confirmPasswordIcon.className = type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+        });
+
+            // Validasi Nama Lengkap (Tidak boleh ada angka)
+        document.getElementById('fullname').addEventListener('input', function() {
+            var fullname = this.value;
+            var regex = /[0-9]/;  // Mendeteksi angka
+            if (regex.test(fullname)) {
+                this.setCustomValidity("Nama lengkap tidak boleh mengandung angka.");
+            } else {
+                this.setCustomValidity("");  // Menghapus pesan error
+            }
+        });
+
+        document.getElementById('phone').addEventListener('input', function() {
+            var phone = this.value;
+            var regex = /[a-zA-Z]/;  // Mendeteksi huruf
+            if (regex.test(phone)) {
+                this.setCustomValidity("Nomor handphone hanya boleh mengandung angka.");
+            } else {
+                this.setCustomValidity("");  // Menghapus pesan error
+            }
+        });
+
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            var password = document.getElementById('password').value;
+            var confirmPassword = this.value;
+            if (password !== confirmPassword) {
+                this.setCustomValidity("Konfirmasi kata sandi harus sama dengan kata sandi.");
+            } else {
+                this.setCustomValidity("");  // Menghapus pesan error
+            }
+        });
+    </script>
+</body>
+</html>

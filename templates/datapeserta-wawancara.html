@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Peserta Wawancara - E-Magang</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <style>
+        body {
+            font-family: 'Figtree', sans-serif;
+            margin-bottom: 2rem;
+        }
+        thead th, tbody td {
+            text-align: center !important;
+            vertical-align: middle;
+            font-size: smaller;
+        }
+
+        .header-image {
+            background: url('{{ url_for('static', filename='images/header3.png') }}') center center / cover no-repeat;
+            background-size: 100%;
+            height: 200px;
+            max-width: 100%;
+            opacity: 0.8;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .table-section { 
+            margin-bottom: 32px; 
+            margin-top: 20px;
+        }
+        
+        .table-striped th{
+            vertical-align: middle;
+            text-align: center;
+            background-color: #dddddd;
+            color: rgb(0, 0, 0);
+        }
+        .table-striped td {
+            vertical-align: middle;
+            text-align: center;
+        }
+        
+        /* Tengahkan semua header */
+        #tabel-aktif thead th {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+         
+        .copyright {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .btn-submit {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            border-radius: 10px;
+            display: block;
+            width: 80px;
+            text-align: center;
+        }
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+        .btn-set-date {
+            background-color: #FFA500;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            padding: 8px 16px;
+        }
+        div.dataTables_filter {
+            margin-bottom: 15px;
+        }
+        .filter-card {
+        margin-bottom: 1.5rem;
+        }
+        .btn-filter {
+        border-radius: 25px;
+        }
+        .dataTables_wrapper .dataTables_filter {
+        display: none;
+        }
+
+    </style>
+</head>
+<body>
+    
+    {% include 'navbar-admin.html' %}
+    {% include 'partials/flash_message.html' %}
+    
+    <div class="container-fluid">
+        <div class="header-image"></div>
+    </div>
+<div class="container mt-4">
+    <h4>Data Wawancara Peserta</h4>
+    <div class="card filter-card">
+      <div class="card-header bg-secondary text-white" data-bs-toggle="collapse" data-bs-target="#filterPanel"
+        style="cursor: pointer;">
+        Filter Data <span class="float-end"><i class="bi bi-chevron-down"></i></span>
+      </div>
+      <div id="filterPanel" class="collapse card-body bg-light">
+        <form id="filterForm" class="row g-3">
+          <div class="col-md-6 col-lg-3">
+            <label class="form-label">Nama</label>
+            <input type="text" class="form-control" name="nama" />
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <label class="form-label">Email</label>
+            <input type="text" class="form-control" name="email" />
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <label class="form-label">Asal Kampus</label>
+            <input type="text" class="form-control" name="kampus" />
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <label class="form-label">Divisi</label>
+            <input type="text" class="form-control" name="nama_divisi" />
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <label class="form-label">Tanggal Mulai</label>
+            <input type="date" class="form-control" name="tanggal_mulai" />
+          </div>          
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary btn-filter">Filter</button>
+          </div>
+        </form>
+      </div>
+    </div>    
+    <h5>Menentukan Tanggal Wawancara</h5>
+    <div class="table-section">
+        <table class="table table-striped" id="tabel-aktif">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Asal Kampus/Sekolah</th>
+                    <th>Nama Divisi</th>
+                    <th>Tanggal Mulai</th>
+                    <th>Tanggal Berakhir</th>
+                    <th>Tanggal Wawancara</th>
+                    <th>Waktu</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for p in peserta_menentukan_tanggal %}
+              <tr>
+                <form method="POST">
+                  <input type="hidden" name="action_type" value="set_date">
+                  <input type="hidden" name="peserta_id" value="{{ p.id }}">
+                  <td>{{ loop.index }}</td>
+                  <td>{{ p.nama }}</td>
+                  <td>{{ p.email }}</td>
+                  <td>{{ p.asal_kampus }}</td>
+                  <td>{{ p.nama_divisi }}</td>
+                  <td>{{ p.tanggal_dimulai.strftime('%Y-%m-%d') if p.tanggal_dimulai else '' }}</td>
+                  <td>{{ p.tanggal_berakhir.strftime('%Y-%m-%d') if p.tanggal_berakhir else '-' }}</td>
+                  <td>
+                    <input type="date" name="tanggal_wawancara" class="form-control" required>
+                  </td>
+                  <td>
+                    <input type="time" name="waktu_wawancara" class="form-control" required>
+                  </td>
+                  <td>
+                    <button type="submit" class="btn btn-success btn-submit">Submit</button>
+                  </td>
+                </form>
+              </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h5>Status Wawancara (Tanggal Sudah Ditentukan)</h5>
+    <div class="table-section">
+        <table class="table table-striped" id="tabel-status">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Asal Kampus/Sekolah</th>
+                    <th>Nama Divisi</th>
+                    <th>Tanggal Mulai</th>
+                    <th>Tanggal Berakhir</th>
+                    <th>Tanggal Wawancara</th>
+                    <th>Waktu</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for p in peserta_tanggal_sudah_ditetapkan %}
+              <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ p.nama }}</td>
+                  <td>{{ p.email }}</td>
+                  <td>{{ p.asal_kampus }}</td>
+                  <td>{{ p.nama_divisi }}</td>
+                  <td>{{ p.tanggal_dimulai.strftime('%Y-%m-%d') if p.tanggal_dimulai else '' }}</td>
+                  <td>{{ p.tanggal_berakhir.strftime('%Y-%m-%d') if p.tanggal_berakhir else '-' }}</td>
+                  <td>{{ p.tanggal_wawancara.strftime('%Y-%m-%d') if p.tanggal_wawancara else '-' }}</td>
+                  <td>{{ p.tanggal_wawancara.strftime('%H:%M') if p.tanggal_wawancara else '-' }}</td>
+                  <td>
+                      <form method="POST" style="display: inline;">
+                          <input type="hidden" name="peserta_id" value="{{ p.id }}">
+                          <input type="hidden" name="action_type" value="">
+                    <button type="button" class="btn btn-success btn-sm btn-selesai">Selesai</button>
+                    <button type="button" class="btn btn-danger btn-sm btn-batal">Batal</button>
+                  </td>
+                </form>
+              </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Selesai -->
+<div class="modal fade" id="modalSelesai" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Konfirmasi Selesai</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="inputPicWawancara" class="form-label">Nama PIC Wawancara</label>
+          <input type="text" class="form-control" id="inputPicWawancara" placeholder="Masukkan nama PIC" required>
+        </div>
+        <div>Yakin peserta ini sudah <b>Selesai Wawancara</b>?</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-success" id="btnModalSelesaiConfirm">Ya, Selesaikan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Batal -->
+<div class="modal fade" id="modalBatal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Konfirmasi Batal</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">Yakin ingin <b>membatalkan</b> jadwal wawancara peserta ini?</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+        <button type="button" class="btn btn-danger" id="btnModalBatalConfirm">Ya, Batalkan</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Modal  -->
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+$(document).ready(function() {
+  // DataTable
+  $('#tabel-aktif, #tabel-status').DataTable({ paging: true, searching: true, lengthChange: true });
+
+  const tableAktif = $('#tabel-aktif').DataTable();
+  const tableStatus = $('#tabel-status').DataTable();
+
+  $('#filterForm').on('submit', function (e) {
+  e.preventDefault();
+
+  const nama = $('input[name="nama"]').val();
+  const email = $('input[name="email"]').val();
+  const kampus = $('input[name="kampus"]').val();
+  const divisi = $('input[name="nama_divisi"]').val();
+  const tanggal_mulai = $('input[name="tanggal_mulai"]').val();
+
+
+  [tableAktif, tableStatus].forEach(function (table) {
+  table
+  .column(1).search(nama)
+  .column(2).search(email)
+  .column(3).search(kampus)
+  .column(4).search(divisi)
+  .column(5).search(tanggal_mulai)
+  .draw();
+  });
+  });
+
+
+  let $currentForm = null;
+  // Selesai
+  $('.btn-selesai').on('click', function(e) {
+    e.preventDefault();
+    $currentForm = $(this).closest('form');
+    $currentForm.find('input[name="action_type"]').val('selesai');
+    $('#modalSelesai').modal('show');
+  });
+  $('#btnModalSelesaiConfirm').on('click', function() {
+    const picName = $('#inputPicWawancara').val().trim();
+    if (!picName) {
+    $('#inputPicWawancara').addClass('is-invalid');
+    return;
+    }
+    // Buat hidden input baru agar data ikut tersubmit
+    const inputHidden = $('<input>')
+      .attr('type', 'hidden')
+      .attr('name', 'pic_wawancara')
+      .val(picName);
+    $currentForm.append(inputHidden);
+    if ($currentForm) { $currentForm.submit(); $currentForm = null; }
+    $('#modalSelesai').modal('hide');
+  });
+  // Batal
+  $('.btn-batal').on('click', function(e) {
+    e.preventDefault();
+    $currentForm = $(this).closest('form');
+    $currentForm.find('input[name="action_type"]').val('batal');
+    $('#modalBatal').modal('show');
+  });
+  $('#btnModalBatalConfirm').on('click', function() {
+    if ($currentForm) { $currentForm.submit(); $currentForm = null; }
+    $('#modalBatal').modal('hide');
+  });
+});
+</script>
+
+</body>
+</html>

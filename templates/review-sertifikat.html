@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Review Laporan Akhir - E-Magang</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        body { font-family: 'Figtree', sans-serif; margin-bottom: 2rem; }
+        .header-image {
+            background: url('{{ url_for('static', filename='images/header3.png') }}') center center / cover no-repeat;
+            background-size: 100%;
+            height: 200px; max-width: 100%;
+            opacity: 0.8; border-radius: 10px; margin-bottom: 30px;
+        }
+        .btn-back { border-radius: 10px; padding: 8px 16px; background-color: #007bff; color: white; font-weight: bold; text-decoration: none; margin-bottom: 20px;}
+        .btn-back:hover { background-color: #0056b3; }
+        .form-control[readonly] { background-color: #e9ecef; }
+        img.rounded-circle { border: 3px solid #ccc; background-color: #fff; }
+        .btn-file { border-radius: 10px; padding: 5px 10px; font-size: 14px; }
+        .copyright { margin-top: 50px; text-align: center; font-size: 14px; color: #666;}
+    </style>
+</head>
+<body>
+    {% include 'navbar-admin.html' %}
+    <div class="container-fluid"><div class="header-image"></div></div>
+
+    <div class="container">
+        <a href="{{ url_for('sertifikat_admin') }}" class="btn-back"><i class="bi bi-arrow-left"></i> Kembali</a>
+
+
+        <div class="container my-5">
+            <h3 class="mb-4">Review Laporan Akhir Peserta</h3>
+            <div class="row">
+                <!-- Sisi Kiri: Informasi Akun & Berkas Peserta -->
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Informasi Akun</h5>
+                            <div class="text-center mb-4">
+                                <img src="{{ url_for('static', filename=peserta.BerkasPeserta.pas_foto.replace('\\', '/')) }}" alt="Pas Foto" class="rounded-circle shadow" width="120" height="120" style="object-fit: cover;">
+                                <h5 class="mt-3 fw-bold">{{ peserta.DataPeserta.nama }}</h5>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-2"><strong>Email</strong><br>{{ peserta.User.email }}</div>
+                                    <div class="mb-2"><strong>No HP</strong><br>{{ peserta.DataPeserta.nohp }}</div>
+                                    <div class="mb-2"><strong>Asal Kampus/Sekolah</strong><br>{{ peserta.DataPeserta.asal_kampus }}</div>
+                                    <div class="mb-2"><strong>Semester/Kelas</strong><br>{{ peserta.DataPeserta.semester }}</div>
+                                    <div class="mb-2"><strong>Tempat Lahir</strong><br>{{ peserta.DataPeserta.tempat_lahir }}</div>
+                                    <div class="mb-2"><strong>Tanggal Lahir</strong><br>{{ peserta.DataPeserta.tanggal_lahir.strftime('%d/%m/%Y') }}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-2"><strong>Jenis Kelamin</strong><br>{{ peserta.DataPeserta.jenis_kelamin }}</div>
+                                    <div class="mb-2"><strong>Tanggal Mulai</strong><br>{{ peserta.DataPeserta.tanggal_dimulai.strftime('%d/%m/%Y') }}</div>
+                                    <div class="mb-2"><strong>Tanggal Berakhir</strong><br>{{ peserta.DataPeserta.tanggal_berakhir.strftime('%d/%m/%Y') }}</div>
+                                    <div class="mb-2"><strong>Divisi</strong><br>{{ peserta.StatusPendaftaran.nama_divisi }}</div>
+                                    <div class="mb-2"><strong>Nama Pembimbing</strong><br>{{ peserta.DataPeserta.nama_pembimbing }}</div>
+                                    <div class="mb-2"><strong>No HP Pembimbing</strong><br>{{ peserta.DataPeserta.nohp_pembimbing }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Berkas Peserta -->
+                    <!-- <div class="card mt-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Berkas Peserta</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Surat Pengantar</span>
+                                    <a href="{{ url_for('static', filename=peserta.BerkasPeserta.surat_pengantar_magang.replace('\\', '/')) }}" class="btn btn-primary btn-file" target="_blank">Lihat File</a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Proposal Magang</span>
+                                    <a href="{{ url_for('static', filename=peserta.BerkasPeserta.proposal_magang.replace('\\', '/')) }}" class="btn btn-primary btn-file" target="_blank">Lihat File</a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Curriculum Vitae (CV)</span>
+                                    <a href="{{ url_for('static', filename=peserta.BerkasPeserta.curriculum_vitae.replace('\\', '/')) }}" class="btn btn-primary btn-file" target="_blank">Lihat File</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div> -->
+                </div>
+                    <!-- Sisi Kanan: Upload Sertifikat -->
+                    <div class="col-md-6">
+                    <form method="POST" enctype="multipart/form-data" action="{{ url_for('review_sertifikat', id=peserta.DataPeserta.id) }}">
+                        <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Unggah Sertifikat Magang</h5>
+                            <ul class="list-group list-group-flush mb-3">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Laporan Akhir</span>
+                                {% if sertifikat.laporan_magang %}
+                                <a href="{{ url_for('static', filename=sertifikat.laporan_magang.replace('\\', '/')) }}" class="btn btn-primary btn-file" target="_blank">Lihat Berkas</a>
+                                {% else %}
+                                <span class="text-muted">Belum diupload</span>
+                                {% endif %}
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Sertifikat Magang</span>
+                                {% if sertifikat.sertifikat_magang %}
+                                <a href="{{ url_for('static', filename=sertifikat.sertifikat_magang.replace('\\', '/')) }}" class="btn btn-primary btn-file" target="_blank">Lihat Sertifikat</a>
+                                {% endif %}
+                            </li>
+                            </ul>
+                            <div class="mb-3">
+                            <label class="form-label">Unggah Sertifikat (PDF/Gambar)</label>
+                            <input type="file" name="sertifikat_magang" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+                            </div>
+                            <div class="d-grid">
+                            <button type="submit" class="btn btn-success">Simpan & Cetak Sertifikat</button>
+                            </div>
+                        </div>
+                        </div>
+                    </form>
+                    </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="copyright">Copyright © 2025 e-Magang. All rights reserved.</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    function updateStatusPeserta() {
+        const statusLaporanSelect = document.getElementById('status-laporan');
+        const statusLaporan = statusLaporanSelect.value;
+        const catatanSection = document.getElementById('catatan-section');
+        const uploadSection = document.getElementById('file-revisi-laporan');
+
+        if (statusLaporan === 'Revisi Laporan') {
+            catatanSection.style.display = 'block';
+            uploadSection.style.display = 'block';
+        } else {
+            catatanSection.style.display = 'none';
+            uploadSection.style.display = 'none';
+        }
+    }
+
+    // Panggil fungsi saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', updateStatusPeserta);
+
+    // Pasang event listener ke select yang benar
+    document.getElementById('status-laporan').addEventListener('change', updateStatusPeserta);
+
+    </script>
+<script>
+  document.getElementById('btn-logbook').addEventListener('click', function() {
+    const pesertaId = this.getAttribute('data-peserta-id');
+    const modalContent = document.getElementById('logbookModalContent');
+
+    const modal = new bootstrap.Modal(document.getElementById('logbookModal'));
+    modal.show();
+
+    modalContent.innerHTML = `
+      <div class="modal-body text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>`;
+
+    fetch(`/logbook/modal/${pesertaId}`)
+      .then(response => response.text())
+      .then(html => {
+        modalContent.innerHTML = html;
+        // Pasang ulang event listener untuk toggle catatan setelah konten modal terload
+        modalContent.querySelectorAll('.catatan-cell').forEach(cell => {
+          cell.style.cursor = 'pointer';
+          cell.addEventListener('click', () => {
+            cell.classList.toggle('expanded');
+          });
+        });
+      })
+      .catch(() => {
+        modalContent.innerHTML = `<div class="modal-body text-danger">Gagal memuat data logbook.</div>`;
+      });
+  });
+</script>
+
+
+
+</body>
+</html>

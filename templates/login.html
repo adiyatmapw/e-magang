@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - E-Magang</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Noto Sans', sans-serif;
+            overflow: hidden;
+        }
+
+        .bg-image {
+            background: url('{{ url_for('static', filename='images/pesertaemagang.png') }}') no-repeat center center fixed;
+            background-size: cover;
+            height: 100%;
+            position: relative;
+            transition: background-image 1s ease-in-out;
+        }
+
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2));
+            z-index: 1;
+        }
+
+        .login-container {
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            transform: translateY(-50%);
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+            transition: transform 0.3s ease;
+        }
+
+        .login-container:hover {
+            transform: translateY(-50%) scale(1.02);
+        }
+
+        .login-header img {
+            width: 120px;
+            display: block;
+            margin: 0 auto 20px;
+        }
+
+        .form-control {
+            border-radius: 20px;
+        }
+
+        .btn-login {
+            width: 100%;
+            border-radius: 20px;
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-login:hover {
+            background-color: #0056b3;
+        }
+
+        .forgot-password,
+        .register-link {
+            text-align: center;
+            display: block;
+            margin-top: 10px;
+            color: #007bff;
+        }
+
+        .forgot-password:hover,
+        .register-link:hover {
+            text-decoration: underline;
+        }
+
+        .copyright {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 14px;
+            z-index: 2;
+        }
+
+        .flash-message {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-image" id="backgroundImage">
+        <div class="bg-overlay"></div>
+        {% include 'partials/flash_message.html' %}
+        <div class="login-container">
+            <div class="login-header">
+                <img src="{{ url_for('static', filename='images/logosystem.png') }}" alt="Logo E-Magang">
+            </div>
+
+            <!-- Form Login -->
+            <form action="{{ url_for('login') }}" method="POST">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan email disini"
+                        required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Kata Sandi</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="password" name="password"
+                            placeholder="Masukkan kata sandi disini" required>
+                        <span class="input-group-text" id="togglePassword">
+                            <i class="bi bi-eye" id="passwordIcon"></i>
+                        </span>
+                    </div>
+                    <a href="{{ url_for('forgot_password') }}" class="forgot-password">Lupa Kata Sandi?</a>
+                </div>
+                <button type="submit" class="btn btn-login">Masuk</button>
+            </form>
+            <a href="{{ url_for('register') }}" class="register-link">Belum memiliki akun? Daftar Disini</a>
+        </div>
+    </div>
+
+    <div class="copyright">
+        Copyright © 2025 e-Magang. All rights reserved.
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            passwordIcon.className = type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+        });
+
+        // Background rotator every 3 minutes
+        const images = [
+            "{{ url_for('static', filename='images/pesertaemagang.png') }}",
+            "{{ url_for('static', filename='images/millingworking.png') }}"
+        ];
+        let currentIndex = 0;
+        const background = document.getElementById("backgroundImage");
+
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % images.length;
+            background.style.backgroundImage = `url('${images[currentIndex]}')`;
+        }, 180000); // 3 minutes
+    </script>
+</body>
+
+</html>

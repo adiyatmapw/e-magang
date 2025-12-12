@@ -1,0 +1,64 @@
+<style>
+.catatan-cell {
+  max-width: 350px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  user-select: none; /* Supaya teks tidak mudah terseleksi saat klik */
+  transition: all 0.3s ease;
+}
+.catatan-cell.expanded {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+}
+
+</style>
+<div class="modal-header">
+  <h5 class="modal-title">Data Logbook</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+  {% if logbooks %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Minggu ke</th>
+        <th>Tanggal Mulai</th>
+        <th>Tanggal Sampai</th>
+        <th>Catatan</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lb in logbooks %}
+      <tr>
+        <td class="text-center">{{ lb.minggu_ke_logbook }}</td>
+        <td>{{ lb.tanggal_logbook.strftime('%d/%m/%Y') }}</td>
+        <td>{{ lb.tanggal_sampai.strftime('%d/%m/%Y') if lb.tanggal_sampai else '-' }}</td>
+        <td class="catatan-cell" title="Klik untuk lihat selengkapnya">
+            {{ lb.catatan or '-' }}
+        </td>
+        <td>
+          {% if lb.file_logbook %}
+          <a href="{{ url_for('static', filename=lb.file_logbook.replace('\\', '/')) }}" target="_blank" class="btn btn-sm btn-warning">
+            <i class="bi bi-eye"></i> Lihat Berkas
+          </a>
+          {% else %}
+          <span class="text-muted">Tidak ada berkas</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-center">Belum ada data logbook.</p>
+  {% endif %}
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+</div>
+
+

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Data Peserta - E-Magang</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Figtree', sans-serif;
+            margin-bottom: 2rem;
+        }
+
+        .header-image {
+            background: url('{{ url_for('static', filename='images/header3.png') }}') center center / cover no-repeat;
+            background-size: 100%;
+            height: 200px;
+            max-width: 100%;
+            opacity: 0.8;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .btn-back {
+            border-radius: 10px;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .btn-back:hover {
+            background-color: #0056b3;
+        }
+        .title {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .title-second {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .form-section {
+            margin-top: 20px;
+        }
+
+        .form-control[readonly] {
+            background-color: #e9ecef;
+        }
+
+        .file-section .btn-file {
+            border-radius: 10px;
+            margin-bottom: 5%;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+
+        .validation-section {
+            margin-top: 30px;
+        }
+
+        .copyright {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar-admin.html' %}
+    {% include 'partials/flash_message.html' %}
+
+    <!-- Header Image -->
+    <div class="container-fluid">
+        <div class="header-image"></div>
+    </div>
+
+    <!-- Tombol Kembali -->
+    <div class="container">
+        <a href="/datapendaftaran" class="btn-back"><i class="bi bi-arrow-left"></i> Kembali</a>
+
+        <!-- Detail Data Peserta -->
+        <h4 class="title">Detail Data Peserta</h4>
+        <div class="form-section">
+        <!-- Informasi Akun -->
+        <h5 class="title-second">Informasi Akun</h5>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="nama" class="form-label">Nama</label>
+                <input type="text" id="nama" class="form-control" value="{{ peserta.DataPeserta.nama }}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label for="telepon" class="form-label">Nomor Telepon</label>
+                <input type="text" id="telepon" class="form-control" value="{{ peserta.DataPeserta.nohp }}" readonly>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="kampus" class="form-label">Asal Kampus/Sekolah</label>
+                <input type="text" id="kampus" class="form-control" value="{{ peserta.DataPeserta.asal_kampus }}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label for="jenjang" class="form-label">Jenjang Pendidikan</label>
+                <input type="text" id="jenjang" class="form-control" value="{{ peserta.DataPeserta.jenjang_pendidikan }}" readonly>
+            </div>
+        </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="semester" class="form-label">Semester/Kelas</label>
+                    <input type="text" id="semester" class="form-control" value="{{ peserta.DataPeserta.semester }}" readonly>
+                </div>                
+                <div class="col-md-6">
+                    <label for="jenis-kelamin" class="form-label">Jenis Kelamin</label>
+                    <input type="text" id="jenis-kelamin" class="form-control" value="{{ peserta.DataPeserta.jenis_kelamin }}" readonly>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="tempat-lahir" class="form-label">Tempat Lahir</label>
+                    <input type="text" id="tempat-lahir" class="form-control" value="{{ peserta.DataPeserta.tempat_lahir }}" readonly>
+                </div>
+                <div class="col-md-6">
+                    <label for="tanggal-lahir" class="form-label">Tanggal Lahir</label>
+                    <input type="text" id="tanggal-lahir" class="form-control" value="{{ peserta.DataPeserta.tanggal_lahir.strftime('%d-%m-%Y') if peserta.DataPeserta.tanggal_lahir else '' }}" readonly>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="tanggal-mulai" class="form-label">Tanggal Dimulai</label>
+                    <input type="text" id="tanggal-mulai" class="form-control" value="{{ peserta.DataPeserta.tanggal_dimulai }}" readonly>
+                </div>
+                <div class="col-md-6">
+                    <label for="tanggal-berakhir" class="form-label">Tanggal Berakhir</label>
+                    <input type="text" id="tanggal-berakhir" class="form-control" value="{{ peserta.DataPeserta.tanggal_berakhir }}" readonly>
+                </div>
+            </div>
+        </div>
+
+        <!-- Berkas Administrasi -->
+        <div class="file-section">
+            <h5 class="title-second">Berkas Administrasi</h5>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="surat-pengantar" class="form-label">Surat Pengantar Magang/PKL dari Kampus/Sekolah</label><br>
+                    {% if peserta.BerkasPeserta.surat_pengantar_magang %}
+                        <a href="{{ url_for('static', filename=peserta.BerkasPeserta.surat_pengantar_magang.replace('\\', '/')) }}" class="btn btn-primary btn-file" target="_blank">Lihat File</a>
+                    {% else %}
+                        <span class="text-danger">Berkas belum diupload</span>
+                    {% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label for="proposal" class="form-label">Proposal Magang</label><br>
+                    {% if peserta.BerkasPeserta.proposal_magang %}
+                        <a href="{{ url_for('static', filename=peserta.BerkasPeserta.proposal_magang.replace('\\', '/')) }}" class="btn btn-primary btn-file" target="_blank">Lihat File</a>
+                    {% else %}
+                        <span class="text-danger">Berkas belum diupload</span>
+                    {% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label for="cv" class="form-label">Curriculum Vitae (CV)</label><br>
+                    {% if peserta.BerkasPeserta.curriculum_vitae %}
+                        <a href="{{ url_for('static', filename=peserta.BerkasPeserta.curriculum_vitae.replace('\\', '/')) }}" class="btn btn-primary btn-file" target="_blank">Lihat File</a>
+                    {% else %}
+                        <span class="text-danger">Berkas belum diupload</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Validasi Data Peserta -->
+        <form method="POST" action="{{ url_for('detaildatapeserta', id=peserta.DataPeserta.id) }}" 
+        id="validasiForm" enctype="multipart/form-data">
+            <div class="validation-section">
+                <h5 class="title-second">Validasi Data Peserta</h5>
+                <div class="row mb-3">
+                <!-- Dropdown Status Berkas -->
+                <div class="col-md-6">
+                    <label for="status-berkas" class="form-label">Status Berkas</label>
+                    <select id="status-berkas" class="form-select" name="status-berkas" onchange="updateStatusPendaftaran()">
+                        <option value="Sedang Diproses" {% if peserta.StatusPendaftaran.status_berkas == 'Sedang Diproses' %}selected{% endif %}>Sedang Diproses</option>
+                        <option value="Sesuai" {% if peserta.StatusPendaftaran.status_berkas == 'Sesuai' %}selected{% endif %}>Lolos</option>
+                        <option value="Tidak Sesuai" {% if peserta.StatusPendaftaran.status_berkas == 'Tidak Sesuai' %}selected{% endif %}>Tidak Lolos</option>
+                    </select>
+                </div>
+            <!-- Field Status Pendaftaran -->
+            <div class="col-md-6">
+                <label for="status-pendaftaran" class="form-label">Status Pendaftaran</label>
+                <input type="text" id="status-pendaftaran" class="form-control" name="status-pendaftaran" value="{{ peserta.StatusPendaftaran.status_daftar }}" readonly>
+                <small class="text-muted" style="color: red !important; font-style: italic;">*Field terisi otomatis sesuai pilihan status berkas</small>
+            </div>
+        </div>
+
+        <!-- Kelengkapan Berkas -->
+        <div id="kelengkapan-berkas" class="file-section mt-3" style="{% if peserta.StatusPendaftaran.status_berkas == 'Sesuai' %}display: block;{% else %}display: none;{% endif %}">
+            <h5 class="title-second">Kelengkapan Berkas</h5>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Surat Pembuatan Tanda Pengenal</label>
+                    <div class="d-flex align-items-center mb-2">
+                        <input type="file" class="form-control me-2" name="surat_tanda_pengenal" accept=".pdf,.png,.jpg,.jpeg" 
+                            {% if peserta.StatusPendaftaran.status_berkas != 'Sesuai' %}disabled{% endif %}>
+                        <!-- <a href="#" class="btn btn-primary btn-template">Download Template</a> -->
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Surat Penerimaan Magang</label>
+                    <div class="d-flex align-items-center mb-2">
+                        <input type="file" class="form-control me-2" name="surat_penerimaan" accept=".pdf,.png,.jpg,.jpeg" 
+                            {% if peserta.StatusPendaftaran.status_berkas != 'Sesuai' %}disabled{% endif %}>
+                        <!-- <a href="#" class="btn btn-primary btn-template">Download Template</a> -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nama Divisi -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="nama-divisi" class="form-label">Nama Divisi</label>
+                    <select id="nama-divisi" class="form-select" name="nama_divisi" {% if peserta.StatusPendaftaran.status_berkas != 'Sesuai' %}disabled{% endif %}>
+                      <option value="">Pilih Divisi</option>
+                      <option value="Divisi Alat Berat" {% if peserta.StatusPendaftaran.nama_divisi == 'Divisi Alat Berat' %}selected{% endif %}>Divisi Alat Berat</option>
+                      <option value="Divisi Kendaraan Khusus" {% if peserta.StatusPendaftaran.nama_divisi == 'Divisi Kendaraan Khusus' %}selected{% endif %}>Divisi Kendaraan Khusus</option>
+                      <option value="Divisi Infrastruktur Perhubungan" {% if peserta.StatusPendaftaran.nama_divisi == 'Divisi Infrastruktur Perhubungan' %}selected{% endif %}>Divisi Infrastruktur Perhubungan</option>
+                      <option value="Divisi Manajerial Pengelolaan" {% if peserta.StatusPendaftaran.nama_divisi == 'Divisi Manajerial Pengelolaan' %}selected{% endif %}>Divisi Manajerial Pengelolaan</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="nama_pembimbing" class="form-label">Nama Pembimbing Lapangan</label>
+                    <input type="text" id="nama_pembimbing_lapangan" name="nama_pembimbing_lapangan" class="form-control"
+                        value="{{ peserta.DataPeserta.nama_pembimbing_lapangan or '' }}" 
+                        onkeypress="return event.charCode < 48 || event.charCode> 57"
+                        {% if peserta.StatusPendaftaran.status_berkas != 'Sesuai' %}disabled{% endif %}>
+                </div>
+            </div>           
+        </div>
+    <button type="button" class="btn btn-success mt-3" id="btnShowModalKonfirmasi">Simpan</button>
+</div>
+</form>
+<!-- Modal Konfirmasi -->
+<div class="modal fade" id="modalKonfirmasi" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Konfirmasi Penyimpanan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">Apakah Anda yakin ingin menyimpan perubahan data peserta ini?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btnModalKonfirmasiSubmit">Ya, Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>  
+
+    <div class="copyright">
+        Copyright © 2025 e-Magang. All rights reserved.
+    </div>
+
+    <script>
+        function updateStatusPendaftaran() {
+            const statusBerkas = document.getElementById('status-berkas').value;
+            const statusPendaftaran = document.getElementById('status-pendaftaran');
+    
+            if (statusBerkas === 'Sedang Diproses') {
+                statusPendaftaran.value = 'Perlu Diseleksi';
+            } else if (statusBerkas === 'Sesuai') {
+                statusPendaftaran.value = 'Kel. Berkas';
+            } else if (statusBerkas === 'Tidak Sesuai') {
+                statusPendaftaran.value = 'Ditolak';
+            }
+        }
+    </script>    
+    <script>
+        function toggleKelengkapanBerkas() {
+            const statusBerkas = document.getElementById('status-berkas').value;
+            const kelengkapanBerkasSection = document.getElementById('kelengkapan-berkas');
+            const inputs = kelengkapanBerkasSection.querySelectorAll('input, select');
+
+            if (statusBerkas === 'Sesuai') {
+                kelengkapanBerkasSection.style.display = 'block';
+                inputs.forEach(input => input.removeAttribute('disabled'));
+            } else {
+                kelengkapanBerkasSection.style.display = 'none';
+                inputs.forEach(input => input.setAttribute('disabled', true));
+            }
+        }
+
+        // Jalankan fungsi setiap kali ada perubahan pada dropdown
+        document.getElementById('status-berkas').addEventListener('change', toggleKelengkapanBerkas);
+
+        // Panggil fungsi saat halaman dimuat
+        toggleKelengkapanBerkas();
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const namaPembimbingInput = document.getElementById('nama_pembimbing_lapangan');
+
+            namaPembimbingInput.addEventListener('input', function () {
+                const regex = /^[^0-9]*$/;
+                if (!regex.test(this.value)) {
+                    this.setCustomValidity('Nama pembimbing Lapangan tidak boleh mengandung angka.');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        });
+    </script>  
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      <script>
+          document.addEventListener('DOMContentLoaded', function () {
+              const form = document.getElementById('validasiForm');
+              const btnShowModal = document.getElementById('btnShowModalKonfirmasi');
+              const btnConfirm = document.getElementById('btnModalKonfirmasiSubmit');
+
+              btnShowModal.addEventListener('click', function () {
+                  let isValid = true;
+
+                  // Bersihkan validasi sebelumnya
+                  form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                  form.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+
+                  // Validasi hanya jika status berkas = Sesuai
+                  const statusBerkas = document.getElementById('status-berkas').value;
+                  if (statusBerkas === 'Sesuai') {
+                      const divisi = form.nama_divisi;
+                      const namaPembimbing = form.nama_pembimbing_lapangan;
+
+                      if (!divisi.value) {
+                          isValid = false;
+                          divisi.classList.add('is-invalid');
+                          const err = document.createElement('div');
+                          err.className = 'invalid-feedback';
+                          err.textContent = 'Divisi wajib dipilih.';
+                          divisi.parentNode.appendChild(err);
+                      }
+
+                      if (!namaPembimbing.value.trim()) {
+                          isValid = false;
+                          namaPembimbing.classList.add('is-invalid');
+                          const err = document.createElement('div');
+                          err.className = 'invalid-feedback';
+                          err.textContent = 'Nama pembimbing wajib diisi.';
+                          namaPembimbing.parentNode.appendChild(err);
+                      } else if (/\d/.test(namaPembimbing.value)) {
+                          isValid = false;
+                          namaPembimbing.classList.add('is-invalid');
+                          const err = document.createElement('div');
+                          err.className = 'invalid-feedback';
+                          err.textContent = 'Nama pembimbing tidak boleh mengandung angka.';
+                          namaPembimbing.parentNode.appendChild(err);
+                      }
+                  }
+
+                  if (isValid) {
+                      const modal = new bootstrap.Modal(document.getElementById('modalKonfirmasi'));
+                      modal.show();
+                  } else {
+                      window.scrollTo({
+                          top: 0,
+                          behavior: 'smooth'
+                      });
+                  }
+              });
+
+              btnConfirm.addEventListener('click', function () {
+                  form.submit();
+              });
+          });
+      </script>
+        
+      
+</body>
+</html>

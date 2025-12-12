@@ -1,0 +1,99 @@
+<style>
+    .custom-navbar {
+        padding: 20px 30px;
+        font-size: 18px;
+    }
+
+    .navbar-brand img {
+        max-height: 60px;
+    }
+
+    .nav-link {
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .nav-link.active {
+        font-weight: bold;
+        color: rgb(57, 102, 249) !important;
+    }
+
+    .btn-warning {
+        padding: 10px 15px;
+        font-size: 14px;
+        border-radius: 10px;
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg custom-navbar sticky-top"
+    style="background-color: #EEEEEE; box-shadow: 0px 4px 13.2px rgba(0, 0, 0, 0.25);">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/homeadmin">
+            <img src="{{ url_for('static', filename='images/logosystem-side.png') }}" alt="Logo E-Magang" width="200">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == url_for('homeadmin') %}active{% endif %}" href="/homeadmin"
+                        id="nav-home">Home</a>
+                </li>
+                <!-- Logika menampilkan menu berdasarkan role -->
+                {% if session['user_role'] == 'HC Admin' %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == url_for('datapendaftaran') %}active{% endif %}"
+                        href="/datapendaftaran" id="nav-data">Data Pendaftaran</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link 
+                    {% if request.path.startswith('/sertifikat') or 
+                    request.path.startswith('/review-laporanakhir') %}active{% endif %}" href="/sertifikatadmin"
+                        id="nav-data">
+                        Sertifikat</a>
+                </li>
+                {% elif session['user_role'] == 'PAM Admin' %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == url_for('datawawancara') %}active{% endif %}"
+                        href="/datawawancara" id="nav-wawancara">Data Wawancara</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == url_for('datapresentasi') %}active{% endif %}"
+                        href="/datapresentasi" id="nav-presentasi">Data Presentasi</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == url_for('datapesertaprakerin') %}active{% endif %}"
+                        href="/datapesertaprakerin" id="nav-peserta">Data Peserta Magang</a>
+                </li>
+            </ul>
+            <div class="dropdown">
+                <button class="btn btn-warning dropdown-toggle text-dark fw-bold" type="button" id="profileDropdown"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-person-circle"></i> Halo <span
+                        id="username">{{ session.get('nama', 'User') }}</span>!
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                    <li><a class="dropdown-item text-danger fw-bold" href="/logout"><i
+                                class="bi bi-box-arrow-right"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    // Menambahkan class active pada navbar item berdasarkan URL saat ini
+    const currentPath = window.location.pathname;
+    if (currentPath === '/homeadmin') {
+        document.getElementById('nav-home').classList.add('active');
+    } else if (currentPath === '/datapendaftaran') {
+        document.getElementById('nav-data').classList.add('active');
+    } else if (currentPath === '/riwayatpendaftaran') {
+        document.getElementById('nav-riwayat').classList.add('active');
+    } else if (currentPath === '/datapesertamagang') {
+        document.getElementById('nav-peserta').classList.add('active');
+    }
+</script>

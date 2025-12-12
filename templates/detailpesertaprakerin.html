@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Detail Peserta Magang</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+  <style>
+    body { 
+      font-family: 'Figtree', 
+      sans-serif; margin-bottom: 2rem; 
+    }
+    .header-image {
+        background: url('{{ url_for('static', filename='images/header3.png') }}') center center / cover no-repeat;
+        background-size: 100%;
+        height: 200px; 
+        max-width: 100%;
+        opacity: 0.8; 
+        border-radius: 10px; 
+        margin-bottom: 30px;
+    }
+    .btn-back { 
+        border-radius: 10px; 
+        padding: 8px 16px; 
+        background-color: #007bff; 
+        color: white; 
+        font-weight: bold; 
+        text-decoration: none; 
+        margin-bottom: 20px;
+    }
+    .btn-back:hover { 
+        background-color: #0056b3; 
+    }
+    .form-control[readonly] { 
+        background-color: #e9ecef; 
+    }
+    img.rounded-circle { 
+        border: 3px solid #ccc; 
+        background-color: #fff; 
+    }
+    .btn-file { 
+        border-radius: 10px; 
+        padding: 5px 10px; 
+        font-size: 14px; 
+    }
+    .copyright { 
+        margin-top: 50px; 
+        text-align: center; 
+        font-size: 14px; 
+        color: #666;
+    }    
+    .status-tag {
+      padding: 4px 12px; 
+      border-radius: 8px; 
+      font-size: 13px; 
+      font-weight: 600; 
+      color: #fff; 
+      display: inline-block;
+    }
+    .status-sertifikat { 
+      background-color: #00c291; 
+    }
+    .status-presentasi { 
+      background-color: #9c27b0; 
+    }
+    .btn-file { 
+      font-size: 13px; 
+    }
+  </style>
+</head>
+<body>
+{% include 'navbar-admin.html' %}
+{% include 'partials/flash_message.html' %}
+    <div class="container-fluid">
+        <div class="header-image">
+    </div>
+    
+    <div class="container">
+      <a href="{% if request.args.get('from') == 'pendaftaran' %}{{ url_for('datapendaftaran') }}{% else %}{{ url_for('datapesertaprakerin') }}{% endif %}"
+        class="btn-back">
+        <i class="bi bi-arrow-left"></i> Kembali
+      </a>
+      
+  
+  
+    <div class="container my-5">
+            <h3 class="mb-4">Detail Data Peserta Magang</h3>    
+            <div class="row">
+              <!-- Kiri: Informasi Peserta -->
+              <div class="col-md-6">
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <h5 class="card-title">Informasi Akun</h5>
+                      <div class="card-header d-flex justify-content-between align-items-center">
+                        <strong>Data Peserta</strong>
+                        {% if sertifikat and sertifikat.status_laporan_magang == 'Sertifikat Tercetak' %}
+                        <span class="status-tag status-sertifikat">Magang Sudah Selesai</span>
+                        {% elif peserta.StatusPendaftaran.status_daftar == 'Diterima' %}
+                        <span class="status-tag status-presentasi">Magang Sedang Berlangsung</span>
+                        {% elif peserta.StatusPendaftaran.status_daftar == 'Ditolak' %}
+                        <span class="status-tag status-sertifikat" style="background-color: #dc3545;">Peserta
+                          Ditolak</span>
+                        {% else %}
+                        <span class="status-tag status-sertifikat" style="background-color: #6c757d;">Peserta Dalam
+                          Proses Pendaftaran</span>
+                        {% endif %}
+                      </div>
+                            <div class="text-center mt-4 mb-4">
+                              {% if peserta.BerkasPeserta.pas_foto %}
+                                <img src="{{ url_for('static', filename=peserta.BerkasPeserta.pas_foto.replace('\\', '/')) }}" alt="Pas Foto" class="rounded-circle shadow" width="120" height="120" style="object-fit: cover;">
+                                {% else %}
+                                <div
+                                  class="rounded-circle shadow d-flex justify-content-center align-items-center bg-light"
+                                  style="width: 120px; height: 120px;">
+                                  <span class="text-muted">Tidak Ada Foto</span>
+                                </div>
+                                {% endif %}
+                                <h5 class="mt-3 fw-bold">{{ peserta.DataPeserta.nama }}</h5>
+                            </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="mb-2"><strong>Nama</strong><br>{{ peserta.DataPeserta.nama or 'Data Tidak Tersedia' }}</div>
+                      <div class="mb-2"><strong>Email</strong><br>{{ peserta.User.email or 'Data Tidak Tersedia' }}</div>
+                      <div class="mb-2"><strong>No HP</strong><br>{{ peserta.DataPeserta.nohp or 'Data Tidak Tersedia' }}</div>
+                      <div class="mb-2"><strong>Asal Kampus/Sekolah</strong><br>{{ peserta.DataPeserta.asal_kampus or 'Data Tidak Tersedia' }}</div>
+                      <div class="mb-2"><strong>Semester/Kelas</strong><br>{{ peserta.DataPeserta.semester or 'Data Tidak Tersedia' }}</div>
+                      <div class="mb-2"><strong>Jenjang Pendidikan</strong><br>{{ peserta.DataPeserta.jenjang_pendidikan or 'Data Tidak Tersedia' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-2"><strong>Jenis Kelamin</strong><br>{{ peserta.DataPeserta.jenis_kelamin or 'Data Tidak Tersedia' }}</div>
+                      <div class="mb-2"><strong>Tempat, Tanggal Lahir</strong><br>
+                        {% if peserta.DataPeserta.tempat_lahir or peserta.DataPeserta.tanggal_lahir %}
+                          {{ peserta.DataPeserta.tempat_lahir or '-' }}, {{ peserta.DataPeserta.tanggal_lahir.strftime('%d/%m/%Y') if peserta.DataPeserta.tanggal_lahir else '-' }}
+                        {% else %} Data Tidak Tersedia {% endif %}
+                      </div>
+                      <div class="mb-2"><strong>Nama Pembimbing</strong><br>{{ peserta.DataPeserta.nama_pembimbing or 'Data Tidak Tersedia' }}</div>
+                      <div class="mb-2"><strong>No HP Pembimbing</strong><br>{{ peserta.DataPeserta.nohp_pembimbing or 'Data Tidak Tersedia' }}</div>
+                      <div class="mb-2"><strong>PIC Wawancara</strong><br>{{ peserta.DataPeserta.pic_wawancara or 'Data Tidak Tersedia' }}</div>
+                      <div class="mb-2"><strong>PIC Presentasi</strong><br>{{ sertifikat.pic_presentasi or 'Data Tidak Tersedia' }}</div>
+                    </div>
+                  </div>
+                </div>
+                </div>
+
+                <!-- Berkas Administrasi -->
+                <div class="card">
+                  <div class="card-header"><strong>Berkas Peserta</strong></div>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <span>Surat Pengantar</span>
+                      {% if peserta.BerkasPeserta.surat_pengantar_magang %}
+                        <a href="{{ url_for('static', filename=peserta.BerkasPeserta.surat_pengantar_magang.replace('\\', '/')) }}" class="btn btn-primary btn-file" target="_blank">Lihat File</a>
+                      {% else %}
+                        <span class="text-muted">Data Belum Diupload</span>
+                      {% endif %}
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <span>Proposal Magang</span>
+                      {% if peserta.BerkasPeserta.proposal_magang %}
+                        <a href="{{ url_for('static', filename=peserta.BerkasPeserta.proposal_magang.replace('\\', '/')) }}" class="btn btn-primary btn-file" target="_blank">Lihat File</a>
+                      {% else %}
+                        <span class="text-muted">Data Belum Diupload</span>
+                      {% endif %}
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <span>CV</span>
+                      {% if peserta.BerkasPeserta.curriculum_vitae %}
+                        <a href="{{ url_for('static', filename=peserta.BerkasPeserta.curriculum_vitae.replace('\\', '/')) }}" class="btn btn-primary btn-file" target="_blank">Lihat File</a>
+                      {% else %}
+                        <span class="text-muted">Data Belum Diupload</span>
+                      {% endif %}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <!-- Kanan: Kelengkapan Berkas Peserta -->
+              <div class="col-md-6">
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h5 class="card-title">Kelengkapan Berkas Peserta</h5>
+                      <ul class="list-group list-group-flush mb-3">
+                        {% set berkas_fields = {
+                          "Surat Pengantar": peserta.BerkasPeserta.surat_pengantar_magang,
+                          "Proposal Magang": peserta.BerkasPeserta.proposal_magang,
+                          "CV": peserta.BerkasPeserta.curriculum_vitae,
+                          "Surat Pembuatan ID Card": peserta.BerkasPeserta.surat_pembuatan_idcard,
+                          "Surat Penerimaan": peserta.BerkasPeserta.surat_penerimaan,
+                          "Pas Foto": peserta.BerkasPeserta.pas_foto,
+                          "Surat Sehat": peserta.BerkasPeserta.surat_sehat,
+                          "Kartu Tanda Mahasiswa": peserta.BerkasPeserta.kartu_tanda_mahasiswa,
+                          "KTP": peserta.BerkasPeserta.ktp,
+                          "Kartu Keluarga": peserta.BerkasPeserta.kartu_keluarga,
+                          "SIM": peserta.BerkasPeserta.sim,
+                          "STNK": peserta.BerkasPeserta.stnk,
+                          "SKCK": peserta.BerkasPeserta.skck
+                        } %}
+                        {% for label, file_path in berkas_fields.items() %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          <span>{{ label }}</span>
+                          {% if file_path %}
+                            <a href="{{ url_for('static', filename=file_path.replace('\\', '/')) }}" class="btn btn-primary btn-file" target="_blank">Lihat File</a>
+                          {% else %}
+                            <span class="text-muted">Data Belum Diupload</span>
+                          {% endif %}
+                        </li>
+                        {% endfor %}
+                      </ul>
+                  </div>
+                </div>
+                <!-- Kanan: Kelengkapan Laporan & Logbook -->
+                  <div class="card mb-4">
+                    <div class="card-body">
+                      <h5 class="card-title">Kelengkapan Laporan Akhir</h5>
+                      <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          <span>Laporan Akhir</span>
+                          {% if sertifikat and sertifikat.laporan_magang %}
+                            <a href="{{ url_for('static', filename=sertifikat.laporan_magang.replace('\\', '/')) }}" class="btn btn-primary btn-file" target="_blank">Lihat Berkas</a>
+                          {% else %}
+                            <span class="text-muted">Data Belum Diupload</span>
+                          {% endif %}
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          <span>Surat Orisinalitas</span>
+                          {% if sertifikat and sertifikat.surat_orisinalitas %}
+                            <a href="{{ url_for('static', filename=sertifikat.surat_orisinalitas.replace('\\', '/')) }}" class="btn btn-primary btn-file" target="_blank">Lihat Berkas</a>
+                          {% else %}
+                            <span class="text-muted">Data Belum Diupload</span>
+                          {% endif %}
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          <span>Logbook</span>
+                          {% if logbooks and logbooks|length > 0 %}
+                          <button type="button" class="btn btn-primary btn-sm" id="btn-logbook"
+                            data-peserta-id="{{ peserta.DataPeserta.id }}">
+                            Lihat Logbook
+                          </button>                                                  
+                          {% else %}
+                            <span class="text-muted">Data Belum Diupload</span>
+                          {% endif %}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <!-- Sertifikat Magang -->
+                  <div class="card mb-4">
+                    <div class="card-body">
+                      <h5 class="card-title">Sertifikat Magang</h5>
+                      {% if sertifikat and sertifikat.sertifikat_magang %}
+                        {% set ext = sertifikat.sertifikat_magang.rsplit('.', 1)[1].lower() %}
+                        {% if ext in ['pdf'] %}
+                          <embed src="{{ url_for('static', filename=sertifikat.sertifikat_magang.replace('\\', '/')) }}" type="application/pdf" width="100%" height="400px"/>
+                        {% elif ext in ['png','jpg','jpeg'] %}
+                          <img src="{{ url_for('static', filename=sertifikat.sertifikat_magang.replace('\\', '/')) }}" class="img-fluid border" alt="Sertifikat Magang">
+                        {% else %}
+                          <a href="{{ url_for('static', filename=sertifikat.sertifikat_magang.replace('\\', '/')) }}" class="btn btn-success btn-file" target="_blank">Download Sertifikat</a>
+                        {% endif %}
+                        <a href="{{ url_for('static', filename=sertifikat.sertifikat_magang.replace('\\', '/')) }}" class="btn btn-success btn-file mt-2" download>Cetak Sertifikat Magang</a>
+                      {% else %}
+                        <span class="text-muted">Data Belum Diupload</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <!-- Sertifikat Laporan Magang -->
+                  <div class="card mb-4">
+                    <div class="card-body">
+                      <h5 class="card-title">Status Laporan Magang</h5>
+                      <div>
+                        {% if sertifikat and sertifikat.status_laporan_magang %}
+                          {{ sertifikat.status_laporan_magang }}
+                        {% else %}
+                          <span class="text-muted">Data Tidak Tersedia</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+            </div>
+            </div>
+
+                            <!-- MODAL LOGBOOK -->
+                                <div class="modal fade" id="logbookModal" tabindex="-1" aria-labelledby="logbookModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl">
+                                        <div class="modal-content" id="logbookModalContent">
+                                        <div class="modal-body text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <!-- MODAL LOGBOOK -->
+              <div class="copyright">Copyright © 2025 e-Magang. All rights reserved.</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    function updateStatusPeserta() {
+        const statusLaporanSelect = document.getElementById('status-laporan');
+        const statusLaporan = statusLaporanSelect.value;
+        const catatanSection = document.getElementById('catatan-section');
+        const uploadSection = document.getElementById('file-revisi-laporan');
+
+        if (statusLaporan === 'Revisi Laporan') {
+            catatanSection.style.display = 'block';
+            uploadSection.style.display = 'block';
+        } else {
+            catatanSection.style.display = 'none';
+            uploadSection.style.display = 'none';
+        }
+    }
+
+    // Panggil fungsi saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', updateStatusPeserta);
+
+    // Pasang event listener ke select yang benar
+    document.getElementById('status-laporan').addEventListener('change', updateStatusPeserta);
+
+    </script>
+<script>
+  document.getElementById('btn-logbook').addEventListener('click', function() {
+    const pesertaId = this.getAttribute('data-peserta-id');
+    const modalContent = document.getElementById('logbookModalContent');
+
+    const modal = new bootstrap.Modal(document.getElementById('logbookModal'));
+    modal.show();
+
+    modalContent.innerHTML = `
+      <div class="modal-body text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>`;
+
+    fetch(`/logbook/modal/${pesertaId}`)
+      .then(response => response.text())
+      .then(html => {
+        modalContent.innerHTML = html;
+        // Pasang ulang event listener untuk toggle catatan setelah konten modal terload
+        modalContent.querySelectorAll('.catatan-cell').forEach(cell => {
+          cell.style.cursor = 'pointer';
+          cell.addEventListener('click', () => {
+            cell.classList.toggle('expanded');
+          });
+        });
+      })
+      .catch(() => {
+        modalContent.innerHTML = `<div class="modal-body text-danger">Gagal memuat data logbook.</div>`;
+      });
+  });
+</script>
+</body>
+</html>

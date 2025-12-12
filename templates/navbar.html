@@ -1,0 +1,100 @@
+<style>
+    .custom-navbar {
+    padding: 20px 30px;
+    font-size: 18px;
+}
+
+.navbar-brand img {
+    max-height: 60px;
+}
+
+.nav-link {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.nav-link.active {
+    font-weight: bold;
+    color: rgb(57, 102, 249) !important;
+}
+
+.btn-warning {
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 10px;
+}
+
+</style>
+<nav class="navbar navbar-expand-lg custom-navbar sticky-top" style="background-color: #EEEEEE; box-shadow: 0px 4px 13.2px rgba(0, 0, 0, 0.25);">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/homepeserta">
+            <img src="{{ url_for('static', filename='images/logosystem-side.png') }}" alt="Logo E-Magang" width="200">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="d-flex justify-content-between w-100 align-items-center">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+            <a class="nav-link {% if request.path == '/homepeserta' %}active{% endif %}"
+                href="/homepeserta">Home</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link {% if request.path.startswith('/daftarmagang') or 
+            request.path.startswith('/prosesseleksi') or 
+            request.path.startswith('/kelengkapanberkas') or 
+            request.path.startswith('/kelengkapanberkas-revisi') or 
+            request.path.startswith('/kelengkapanberkas-uploaded') or 
+            request.path.startswith('/wawancara') or 
+            request.path.startswith('/pengumuman') %}active{% endif %}" href="/daftarmagang">Daftar Magang</a>
+            </li>
+            {% if status_daftar == 'Diterima' %}
+            <li class="nav-item">
+            <a class="nav-link {% if request.path.startswith('/logbook') %}active{% endif %}" href="{{ url_for('logbook') }}">Logbook</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link {% if request.path.startswith('/laporan_magang') or request.path.startswith('/sertifikat') %}active{% endif %}" href="{{ url_for('laporan_magang') }}">Sertifikat Magang</a>
+            </li>
+            {% endif %}
+        </ul>
+
+        <div class="dropdown">
+            <button class="btn btn-warning dropdown-toggle text-dark fw-bold" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle"></i> Halo <span id="username">{{ session.get('nama', 'User') }}</span>!
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+            <li><a class="dropdown-item text-danger fw-bold" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+            </ul>
+        </div>
+        </div>
+
+    </div>
+</nav>
+
+<script>
+    // Menambahkan class active pada navbar item berdasarkan URL saat ini
+    const currentPath = window.location.pathname;
+
+    if (currentPath === '/homepeserta') {
+        document.getElementById('nav-home').classList.add('active');
+    } else if (currentPath === '/daftarmagang') {
+        document.getElementById('nav-daftar').classList.add('active');
+    } else if (currentPath === '/kelengkapanberkas') {
+        document.getElementById('nav-berkas').classList.add('active');
+    } else if (currentPath === '/wawancara') {
+        document.getElementById('nav-wawancara').classList.add('active');
+    } else if (currentPath === '/pengumuman') {
+        document.getElementById('nav-pengumuman').classList.add('active');
+    } else if (currentPath === '/homeadmin') {
+        document.getElementById('nav-home-admin').classList.add('active');
+    } else if (currentPath === '/datapendaftaran') {
+        document.getElementById('nav-data-pendaftaran').classList.add('active');
+    } else if (currentPath === '/datapesertaprakerin') {
+        document.getElementById('nav-data-prakerin').classList.add('active');
+    } else if (currentPath === '/logbook') {
+    document.getElementById('nav-logbook').classList.add('active');
+    } else if (currentPath === '/laporan_magang') {
+    document.getElementById('nav-laporan-magang').classList.add('active');
+    }
+</script>
+

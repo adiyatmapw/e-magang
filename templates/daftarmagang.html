@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Magang - E-Magang</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Figtree', sans-serif;
+            margin-bottom: 2rem;
+        }
+
+        .header-image {
+            background: url('{{ url_for('static', filename='images/header3.png') }}') center center / cover no-repeat;
+            background-size: 100%;
+            height: 200px;
+            max-width: 100%;
+            opacity: 0.8;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.811));
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .timeline li {
+            position: relative;
+            text-align: center;
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .timeline li::before {
+            content: attr(data-step);
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            border-radius: 50%;
+            background-color: #EEEEEE;
+            border: 2px solid #EEEEEE;
+            display: block;
+            margin: 0 auto 10px;
+            color: #000000;
+            font-weight: bold;
+        }
+
+        .timeline li.active::before {
+            background-color: #6FDC5E;
+            color: white;
+            border: 2px solid #6FDC5E;
+        }
+
+        .timeline li::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background-color: #EEEEEE;
+            top: 20px;
+            left: -50%;
+            z-index: -1;
+        }
+
+        .timeline li:first-child::after {
+            display: none;
+        }
+
+        .timeline li.active::after {
+            background-color: #6FDC5E;
+        }
+
+        .form-section {
+            margin-top: 30px;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 10px;
+        }
+
+        .file-upload {
+            border: 2px dashed #007bff;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .file-upload.drag-over {
+            border-color: #0056b3;
+            background-color: #f0f8ff;
+        }
+
+        .file-options {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .file-options button {
+            margin-right: 10px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            border-radius: 20px;
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+
+        .custom-upload-box {
+            position: relative;
+            border: 2px dashed #ccc;
+            padding: 30px 15px;
+            background-color: #f8f9fa;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .custom-upload-box.dragover {
+            background-color: #e6f0ff;
+            border-color: #007bff;
+        }
+
+        .custom-upload-input {
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .custom-upload-placeholder {
+            position: relative;
+            z-index: 1;
+            font-size: 15px;
+            color: #777;
+            pointer-events: none;
+        }
+
+        .copyright {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .readonly-field {
+            background-color: #ececec;
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    {% include 'partials/flash_message.html' %}
+
+    <!-- Header Image -->
+    <div class="header-image">
+        <div class="header-overlay"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container mt-5">
+        <!-- Timeline -->
+        <ul class="timeline">
+            <li class="active" data-step="1">Administrasi</li>
+            <li data-step="2">Proses Seleksi</li>
+            <li data-step="3">Kelengkapan Berkas</li>
+            <li data-step="4">Wawancara</li>
+            <li data-step="5">Pengumuman</li>
+        </ul>
+        {% include 'partials/flash_message.html' %}
+
+
+        <!-- Form Section -->
+        <div class="form-section">
+            <h4>Informasi Akun</h4>
+            <form id="registrationForm" method="POST" enctype="multipart/form-data">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="name" class="form-label">Nama</label>
+                        <input type="text" class="form-control readonly-field text-dark" id="name"
+                            value="{{ user.nama }}" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="phone" class="form-label">Nomor Telepon</label>
+                        <input type="tel" class="form-control readonly-field text-dark" id="phone"
+                            value="{{ user.nohp }}" readonly>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="nik" class="form-label">NIK</label>
+                        <input type="text" class="form-control readonly-field text-dark" id="nik" name="nik"
+                            value="{{ user.nik }}" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control readonly-field text-dark" id="email" name="email" 8
+                            value="{{ user.email }}" readonly>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="jenjang" class="form-label">Jenjang Pendidikan</label>
+                        <select id="jenjang" name="jenjang" class="form-select" required>
+                            <option value="" selected disabled>Pilih</option>
+                            <option value="SMA/SMK">SMA/SMK</option>
+                            <option value="D3">D3</option>
+                            <option value="D4">D4</option>
+                            <option value="S1">S1</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="campus" class="form-label">Asal Kampus/Sekolah</label>
+                        <input type="text" class="form-control" id="campus" name="campus"
+                            placeholder="Contoh: Universitas Indonesia / SMAN 2 Bandung" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="semester" class="form-label">Semester/Kelas</label>
+                        <input type="number" class="form-control" id="semester" name="semester"
+                            placeholder="Masukkan Semester/Kelas" required required min="1" max="12">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="gender" class="form-label">Jenis Kelamin</label>
+                        <select id="gender" name="gender" class="form-select" required>
+                            <option value="" selected disabled>Pilih</option>
+                            <option value="Laki-Laki">Laki-Laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="birthplace" class="form-label">Tempat Lahir</label>
+                        <input type="text" id="birthplace" name="tempat_lahir" class="form-control" list="birthplace-list"
+                            placeholder="Masukkan atau pilih kota...">
+                        <datalist id="birthplace-list"></datalist>
+                        <!-- <input type="text" class="form-control" id="birthplace" name="birthplace"
+                            placeholder="Contoh: Jakarta (tanpa 'Kota')" required onkeypress="return isLetter(event);"> -->
+                    </div>
+                    <div class="col-md-6">
+                        <label for="birthdate" class="form-label">Tanggal Lahir</label>
+                        <input type="date" class="form-control" id="birthdate" name="birthdate" required>
+                    </div>
+                </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="startDate" class="form-label">Tanggal Magang Dimulai</label>
+                <input type="date" class="form-control" id="startDate" name="startDate" required>
+            </div>
+            <div class="col-md-6">
+                <label for="endDate" class="form-label">Tanggal Magang Berakhir</label>
+                <input type="date" class="form-control" id="endDate" name="endDate" required>
+            </div>
+            <span class="text-danger" style="font-style: italic;">*Program Magang/PKL Minimal Berlangsung Selama 1 Bulan
+            </span>
+        </div>
+
+        <h4>Kelengkapan Berkas Awal</h4>
+
+        <div class="mb-4">
+            <label class="form-label">Unggah Berkas Surat Pengantar Magang/PKL dari Kampus/Sekolah</label>
+            <div class="custom-upload-box">
+                <input type="file" id="surat_pengantar_magang" name="surat_pengantar_magang"
+                    class="form-control custom-upload-input"
+                    accept=".pdf,.docx" required>
+                <div class="custom-upload-placeholder">
+                    <i class="bi bi-paperclip me-2"></i> Pilih Berkas atau Letakkan Berkas Disini
+                </div>
+            </div>
+            <div class="form-text mt-1">
+                Format yang diterima: <strong>.pdf, .docx</strong>, max <strong>10 MB</strong>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Unggah Berkas Proposal Magang</label>
+                <div class="custom-upload-box">
+                    <input type="file" id="proposal_magang" name="proposal_magang"
+                        class="form-control custom-upload-input"
+                        accept=".pdf,.docx" required>
+                    <div class="custom-upload-placeholder">
+                        <i class="bi bi-paperclip me-2"></i> Pilih Berkas atau Letakkan Berkas Disini
+                    </div>
+                </div>
+                <div class="form-text mt-1">
+                    Format yang diterima: <strong>.pdf, .docx</strong>, max <strong>10 MB</strong>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Unggah Berkas Surat Curriculum Vitae</label>
+                <div class="custom-upload-box">
+                    <input type="file" id="curriculum_vitae" name="curriculum_vitae"
+                        class="form-control custom-upload-input"
+                        accept=".pdf,.docx"
+                        required>
+                    <div class="custom-upload-placeholder">
+                        <i class="bi bi-paperclip me-2"></i> Pilih Berkas atau Letakkan Berkas Disini
+                    </div>
+                </div>
+                <div class="form-text mt-1">
+                    Format yang diterima: <strong>.pdf, .docx</strong>, max <strong>10 MB</strong>
+                </div>
+                <button type="button" class="btn btn-submit mt-3" id="btnDaftarShowModal">Daftar</button>
+                </form>
+            </div>
+        </div>
+        <!-- Modal Konfirmasi Pendaftaran -->
+        <div class="modal fade" id="modalKonfirmasiPendaftaran" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Konfirmasi Pendaftaran</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin data yang diisi sudah benar dan ingin mendaftar magang?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-primary" id="btnModalKonfirmasiSubmit">Ya, Daftar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End of Modal Konfirmasi Pendaftaran -->
+        
+
+        <div class="copyright">
+            Copyright © 2025 e-Magang. All rights reserved.
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            document.querySelectorAll('.custom-upload-box').forEach(uploadBox => {
+                const input = uploadBox.querySelector('.custom-upload-input');
+                const placeholder = uploadBox.querySelector('.custom-upload-placeholder');
+
+                uploadBox.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    uploadBox.classList.add('dragover');
+                });
+
+                uploadBox.addEventListener('dragleave', () => {
+                    uploadBox.classList.remove('dragover');
+                });
+
+                uploadBox.addEventListener('drop', e => {
+                    e.preventDefault();
+                    uploadBox.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        input.files = files;
+                        updatePlaceholder();
+                    }
+                });
+
+                input.addEventListener('change', () => {
+                    updatePlaceholder();
+                });
+
+                function updatePlaceholder() {
+                    if (input.files.length > 0) {
+                        placeholder.innerHTML = `<i class="bi bi-paperclip me-2"></i> ${input.files[0].name}`;
+                        uploadBox.style.borderColor = '#28a745';
+                        uploadBox.style.backgroundColor = '#e6ffe6';
+                        placeholder.style.color = '#28a745';
+                    } else {
+                        placeholder.innerHTML =
+                            `<i class="bi bi-paperclip me-2"></i> Pilih File atau Letakkan File Disini`;
+                        uploadBox.style.borderColor = '#ccc';
+                        uploadBox.style.backgroundColor = '#f8f9fa';
+                        placeholder.style.color = '#777';
+                    }
+                }
+            });
+            function handleFileUpload(files, uploadField, fileOptions) {
+            if (files.length > 0) {
+            const file = files[0];
+            if (file.size <= 2 * 1024 * 1024) { uploadField.textContent=file.name; fileOptions.style.display='block' ; }
+                else { alert('File terlalu besar. Maksimum 10 MB.'); } } }
+        </script>
+        <script>
+            function isLetter(evt) {
+                const charCode = evt.which ? evt.which : evt.keyCode;
+                // Allow: a-z, A-Z, space, and common non-ASCII char (e.g. é, ñ)
+                return /^[a-zA-Z\s\u00C0-\u024F]+$/.test(String.fromCharCode(charCode));
+            }
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const jenjangSelect = document.getElementById('jenjang');
+                const semesterInput = document.getElementById('semester');
+
+                jenjangSelect.addEventListener('change', function () {
+                    const jenjang = this.value;
+                    if (jenjang === 'SMA/SMK') {
+                        semesterInput.max = 12;
+                    } else {
+                        if (parseInt(semesterInput.value) > 8) {
+                            semesterInput.value = '';
+                        }
+                        semesterInput.max = 8;
+                    }
+                });
+
+                // Validasi tambahan saat user input angka
+                semesterInput.addEventListener('input', function () {
+                    const max = parseInt(semesterInput.max);
+                    const value = parseInt(semesterInput.value);
+                    if (value > max) {
+                        alert(
+                            `Semester/Kelas tidak boleh lebih dari ${max} untuk jenjang yang dipilih.`);
+                        semesterInput.value = '';
+                    }
+                });
+            });
+        </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('registrationForm');
+        const btnDaftar = document.getElementById('btnDaftarShowModal');
+        const btnKonfirmasi = document.getElementById('btnModalKonfirmasiSubmit');
+
+        btnDaftar.addEventListener('click', function () {
+            let isValid = true;
+
+            // Bersihkan validasi sebelumnya
+            form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            form.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+
+            const requiredFields = [{
+                    id: 'semester',
+                    message: 'Semester wajib diisi'
+                },
+                {
+                    id: 'campus',
+                    message: 'Asal kampus wajib diisi'
+                },
+                {
+                    id: 'gender',
+                    message: 'Jenis kelamin wajib dipilih'
+                },
+                {
+                    id: 'jenjang',
+                    message: 'Jenjang wajib dipilih'
+                },
+                {
+                    id: 'birthplace',
+                    message: 'Tempat lahir wajib diisi'
+                },
+                {
+                    id: 'birthdate',
+                    message: 'Tanggal lahir wajib diisi'
+                },
+                {
+                    id: 'startDate',
+                    message: 'Tanggal mulai magang wajib diisi'
+                },
+                {
+                    id: 'endDate',
+                    message: 'Tanggal akhir magang wajib diisi'
+                },
+            ];
+
+            requiredFields.forEach(field => {
+                const input = form[field.id];
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    const feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback';
+                    feedback.textContent = field.message;
+                    input.parentNode.appendChild(feedback);
+                    isValid = false;
+                }
+            });
+
+            // Validasi tanggal mulai < tanggal akhir
+            const startDate = new Date(form.startDate.value);
+            const endDate = new Date(form.endDate.value);
+            if (startDate && endDate && endDate < startDate) {
+                const endDateInput = form.endDate;
+                endDateInput.classList.add('is-invalid');
+                const feedback = document.createElement('div');
+                feedback.className = 'invalid-feedback';
+                feedback.textContent = 'Tanggal berakhir tidak boleh lebih awal dari tanggal mulai';
+                endDateInput.parentNode.appendChild(feedback);
+                isValid = false;
+            }
+
+            // Validasi file upload
+            const fileFields = [{
+                    id: 'surat_pengantar_magang',
+                    label: 'Surat Pengantar'
+                },
+                {
+                    id: 'proposal_magang',
+                    label: 'Proposal Magang'
+                },
+                {
+                    id: 'curriculum_vitae',
+                    label: 'Curriculum Vitae'
+                }
+            ];
+            const allowedExtensions = ['pdf', 'docx'];
+            const maxFileSize = 10 * 1024 * 1024;
+
+            fileFields.forEach(fileField => {
+                const input = form[fileField.id];
+                const file = input.files[0];
+                if (!file) {
+                    input.classList.add('is-invalid');
+                    const feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback';
+                    feedback.textContent = `${fileField.label} wajib diunggah`;
+                    input.parentNode.appendChild(feedback);
+                    isValid = false;
+                    return;
+                }
+
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (!allowedExtensions.includes(ext)) {
+                    input.classList.add('is-invalid');
+                    const feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback';
+                    feedback.textContent = `${fileField.label} harus berformat PDF atau DOCX`;
+                    input.parentNode.appendChild(feedback);
+                    isValid = false;
+                } else if (file.size > maxFileSize) {
+                    input.classList.add('is-invalid');
+                    const feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback';
+                    feedback.textContent =
+                        `Ukuran ${fileField.label} tidak boleh lebih dari 10MB`;
+                    input.parentNode.appendChild(feedback);
+                    isValid = false;
+                }
+            });
+
+            if (isValid) {
+                const modal = new bootstrap.Modal(document.getElementById(
+                'modalKonfirmasiPendaftaran'));
+                modal.show();
+            } else {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        });
+
+        // Submit form setelah klik "Ya, Daftar"
+        btnKonfirmasi.addEventListener('click', function () {
+            form.submit();
+        });
+    });
+</script>
+<script>
+    const cities = [
+        "Jakarta", "Bandung", "Surabaya", "Medan", "Semarang", "Yogyakarta", "Denpasar", "Makassar", "Palembang",
+        "Padang",
+        "Pontianak", "Samarinda", "Manado", "Balikpapan", "Pekanbaru", "Batam", "Malang", "Tasikmalaya",
+        "Banjarmasin", "Banjar", "Banjarbaru", "Batu", "Baubau", "Bengkulu", "Bima", "Cirebon",
+        "Tangerang", "Depok", "Bogor", "Bekasi", "Serang", "Solo", "Madiun", "Jember", "Kediri", "Kupang",
+        "Jayapura", "Ternate", "Banda Aceh", "Binjai", "Palu", "Kendari", "Tarakan", "Tegal", "Magelang",
+        "Sukabumi", "Probolinggo", "Pangkal Pinang", "Lubuklinggau", "Sorong", "Bontang", "Lhokseumawe", "Bitung",
+        "Cilegon", "Blitar", "Bukittinggi",
+    ];
+
+    // Sort alfabetis
+    cities.sort((a, b) => a.localeCompare(b));
+
+    const datalist = document.getElementById('birthplace-list');
+    cities.forEach(city => {
+    const option = document.createElement('option');
+    option.value = city;
+    datalist.appendChild(option);
+    });
+    </script>
+
+    
+  
+          
+</body>
+
+</html>
